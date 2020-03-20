@@ -1,3 +1,0 @@
-name: IMBungeeCord
-version: ${project.version}
-main: de.Iclipse.IMBungee.IMBungeeCord
