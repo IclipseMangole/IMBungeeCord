@@ -1,6 +1,7 @@
 package de.Iclipse.IMBungee;
 
 import de.Iclipse.IMBungee.Functions.Commands.cmd_message;
+import de.Iclipse.IMBungee.Functions.Listener.ChannelListener;
 import de.Iclipse.IMBungee.Functions.Listener.JoinListener;
 import de.Iclipse.IMBungee.Functions.Listener.MOTDListener;
 import de.Iclipse.IMBungee.Functions.Listener.QuitListener;
@@ -31,7 +32,6 @@ public final class IMBungeeCord extends Plugin {
     @Override
     public void onEnable() {
         super.onEnable();
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new MOTDListener());
         ThreadExecutor.setExecutor(new BungeeExecutor());
         Data.instance = this;
         MySQL.connect();
@@ -39,6 +39,7 @@ public final class IMBungeeCord extends Plugin {
         Data.dsp = new Dispatcher(this);
         registerCommands();
         registerListener();
+        ProxyServer.getInstance().registerChannel("im:main");
     }
 
     @Override
@@ -55,6 +56,7 @@ public final class IMBungeeCord extends Plugin {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new MOTDListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this, new QuitListener());
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new ChannelListener());
     }
 
     public static void loadResourceBundles(){
