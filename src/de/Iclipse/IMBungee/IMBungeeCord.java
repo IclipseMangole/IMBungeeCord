@@ -1,11 +1,13 @@
 package de.Iclipse.IMBungee;
 
+import de.Iclipse.IMBungee.Functions.Commands.cmd_friend;
 import de.Iclipse.IMBungee.Functions.Commands.cmd_message;
 import de.Iclipse.IMBungee.Functions.Listener.ChannelListener;
 import de.Iclipse.IMBungee.Functions.Listener.JoinListener;
 import de.Iclipse.IMBungee.Functions.Listener.MOTDListener;
 import de.Iclipse.IMBungee.Functions.Listener.QuitListener;
 import de.Iclipse.IMBungee.Functions.MySQL.MySQL;
+import de.Iclipse.IMBungee.Functions.MySQL.MySQL_Friend;
 import de.Iclipse.IMBungee.Util.Command.BungeeCommand;
 import de.Iclipse.IMBungee.Util.Command.IMCommand;
 import de.Iclipse.IMBungee.Util.Dispatching.Dispatcher;
@@ -40,6 +42,7 @@ public final class IMBungeeCord extends Plugin {
         registerCommands();
         registerListener();
         ProxyServer.getInstance().registerChannel("im:main");
+        createTables();
     }
 
     @Override
@@ -50,6 +53,7 @@ public final class IMBungeeCord extends Plugin {
 
     public void registerCommands(){
         register(cmd_message.class, true);
+        register(cmd_friend.class, true);
     }
 
     public void registerListener(){
@@ -57,6 +61,10 @@ public final class IMBungeeCord extends Plugin {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this, new QuitListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this, new ChannelListener());
+    }
+
+    public void createTables(){
+        MySQL_Friend.createFriendTable();
     }
 
     public static void loadResourceBundles(){
