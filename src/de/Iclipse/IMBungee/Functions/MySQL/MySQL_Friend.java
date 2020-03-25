@@ -13,8 +13,16 @@ public class MySQL_Friend {
 
     public static void createFriendship(UUID uuid, String name, UUID frienduuid, String friendname){
         if(!isFriendshipExists(uuid,frienduuid)){
-            MySQL.update("INSERT INTO friend WHERE (uuid, name, frienduuid, friendname) VALUES ('" + uuid + "', '" + name + "', '" + frienduuid + "', '" + friendname + "')");
+            MySQL.update("INSERT INTO friend WHERE (uuid, name, frienduuid, friendname, accepted) VALUES ('" + uuid + "', '" + name + "', '" + frienduuid + "', '" + friendname + "', '" + false + "')");
         }
+    }
+
+    public static void setFriendshipActive(UUID uuid, UUID frienduuid){
+            MySQL.update("UPDATE friend SET accepted = '" + true + "' WHERE uuid = '" + uuid + "' AND frienduuid = '" + frienduuid + "'");
+    }
+
+    public static void setFriendshipActive(String name, String friendname){
+        MySQL.update("UPDATE friend SET accepted = '" + true + "' WHERE name = '" + name + "' AND friendname = '" + friendname + "'");
     }
 
     public static boolean isFriendshipExists(UUID uuid, UUID frienduuid){
