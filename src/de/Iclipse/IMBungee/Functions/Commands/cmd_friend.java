@@ -4,7 +4,6 @@ import de.Iclipse.IMBungee.Data;
 import de.Iclipse.IMBungee.Functions.MySQL.MySQL_Friend;
 import de.Iclipse.IMBungee.Functions.MySQL.MySQL_User;
 import de.Iclipse.IMBungee.Util.Command.IMCommand;
-import de.Iclipse.IMBungee.Util.Dispatching.Language;
 import de.Iclipse.IMBungee.Util.UUIDFetcher;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -16,6 +15,7 @@ import java.util.UUID;
 import static de.Iclipse.IMBungee.Data.dsp;
 
 public class cmd_friend {
+    /*
     private StringBuilder builder;
 
     @IMCommand(
@@ -143,4 +143,5 @@ public class cmd_friend {
         }
         builder.append("\n" + Data.symbol + "§e" + dsp.get("friend." + command + ".usage", lang) + "§8: §7 " + dsp.get("friend." + command + ".description", lang) + ChatColor.RESET);
     }
+     */
 }

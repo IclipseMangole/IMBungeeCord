@@ -101,7 +101,7 @@ public class CommandProcessor<S> {
 
         //Argumentanzahl
         if (command.minArgs() > -1 && args.length - wildcards < command.minArgs() || command.maxArgs() > -1 && args.length - wildcards > command.maxArgs()) {
-            dsp.send((ProxiedPlayer) sender, "cmd.usage", dsp.get(command.usage(), MySQL_User.getLanguage(UUIDFetcher.getUUID(((ProxiedPlayer) sender).getName()))));
+            dsp.send((ProxiedPlayer) sender, "cmd.usage", dsp.get(command.usage(), (CommandSender) sender));
             return;
         }
 
@@ -123,7 +123,7 @@ public class CommandProcessor<S> {
                 j++;
             } catch (Exception ex) {
                 ex.printStackTrace();
-                dsp.send((CommandSender) sender, "cmd.usage", dsp.get(command.usage(), MySQL_User.getLanguage(UUIDFetcher.getUUID(((ProxiedPlayer) sender).getName()))));
+                dsp.send((CommandSender) sender, "cmd.usage", dsp.get(command.usage(), (CommandSender) sender));
                 return;
             }
         }
@@ -148,7 +148,7 @@ public class CommandProcessor<S> {
                 boolean booleanResult = (boolean) result;
                 if (!booleanResult) {
                     System.out.println("!booleanResult -> cmd.usage");
-                    dsp.send((ProxiedPlayer) sender, "cmd.usage", dsp.get(command.usage(), MySQL_User.getLanguage(UUIDFetcher.getUUID(((ProxiedPlayer) sender).getName()))));
+                    dsp.send((ProxiedPlayer) sender, "cmd.usage", dsp.get(command.usage(), (CommandSender) sender));
                 }
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
