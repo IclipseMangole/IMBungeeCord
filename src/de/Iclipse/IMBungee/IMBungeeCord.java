@@ -11,7 +11,6 @@ import de.Iclipse.IMBungee.Functions.MySQL.MySQL_Friend;
 import de.Iclipse.IMBungee.Util.Command.BungeeCommand;
 import de.Iclipse.IMBungee.Util.Command.IMCommand;
 import de.Iclipse.IMBungee.Util.Dispatching.Dispatcher;
-import de.Iclipse.IMBungee.Util.Dispatching.Language;
 import de.Iclipse.IMBungee.Util.Executor.BungeeExecutor;
 import de.Iclipse.IMBungee.Util.Executor.ThreadExecutor;
 import de.Iclipse.IMBungee.Util.IScheduler;
@@ -22,12 +21,10 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static de.Iclipse.IMBungee.Util.Dispatching.ResourceBundle.*;
+import static de.Iclipse.IMBungee.Data.langDE;
+import static de.Iclipse.IMBungee.Data.langEN;
 
 public final class IMBungeeCord extends Plugin {
 
@@ -38,7 +35,6 @@ public final class IMBungeeCord extends Plugin {
         Data.instance = this;
         MySQL.connect();
         loadResourceBundles();
-        Data.dsp = new Dispatcher(this);
         registerCommands();
         registerListener();
         ProxyServer.getInstance().registerChannel("im:main");
@@ -67,12 +63,18 @@ public final class IMBungeeCord extends Plugin {
         MySQL_Friend.createFriendTable();
     }
 
-    public static void loadResourceBundles(){
-        loadResourceBundleDE("langDE");
-        loadResourceBundleEN("langEN");
-        Language.DE.setBundle(msgDE);
-        Language.EN.setBundle(msgEN);
-        System.out.println(Data.prefix + "Loaded languages!");
+    public void loadResourceBundles(){
+        try {
+            HashMap<String, ResourceBundle> langs = new HashMap<>();
+            langDE = ResourceBundle.getBundle("i18n.langDE");
+            langEN = ResourceBundle.getBundle("i18n.langEN");
+            langs.put("DE", langDE);
+            langs.put("EN", langEN);
+            Data.dsp = new Dispatcher(this, langs);
+            System.out.println(Data.prefix + "Loaded languages!");
+        }catch(MissingResourceException | NullPointerException e){
+            System.out.println("Reload oder Bundle not found!");
+        }
     }
 
     private Map<String, Command> commandMap = new HashMap<>();

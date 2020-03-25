@@ -1,36 +1,39 @@
 package de.Iclipse.IMBungee.Util.Dispatching;
 
+
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Plugin;
 
+import java.util.HashMap;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 public class Dispatcher extends Dispatch<CommandSender> {
 
     private String title = "";
 
-    public Dispatcher(Plugin plugin) {
-        super(plugin.getDescription().getName(), plugin.getLogger());
-        title = plugin.getDescription().getName();
+    public Dispatcher(Plugin plugin, HashMap<String, ResourceBundle> langs) {
+        super(plugin.getProxy().getName(), plugin.getLogger(), langs);
+        title = plugin.getProxy().getName();
     }
 
-    public Dispatcher(String title, Logger logger) {
-        super(title, logger);
+    public Dispatcher(String title, Logger logger, HashMap<String, ResourceBundle> langs) {
+        super(title, logger, langs);
         this.title = title;
     }
 
     @Override
-    public void online(String key, Object... args) {
+    public void online(String key, String... args) {
         super.online(key, args);
     }
 
     @Override
-    public void certain(String key, String permission, Object... args) {
+    public void certain(String key, String permission, String... args) {
         super.certain(key, permission, args);
     }
 
     @Override
-    public void send(CommandSender p, String key, Object... args) {
+    public void send(CommandSender p, String key, String... args) {
         super.send(p, key, args);
     }
 
@@ -40,17 +43,17 @@ public class Dispatcher extends Dispatch<CommandSender> {
     }
 
     @Override
-    public String get(String key, Language lang,Boolean prefix, Object... params) {
-        return super.get(key, lang, prefix, params);
+    public String get(String key,ResourceBundle lang,Boolean prefix, String... args) {
+        return super.get(key, lang, prefix, args);
     }
 
     @Override
-    public String get(String key, Language lang, Object... params) {
-        return get(key, lang, false, params);
+    public String get(String key, ResourceBundle lang, String... args) {
+        return get(key, lang, false, args);
     }
 
     @Override
-    public void logInfo(String message, Object... args) {
+    public void logInfo(String message, String... args) {
         super.logInfo(message, args);
     }
 
@@ -65,14 +68,16 @@ public class Dispatcher extends Dispatch<CommandSender> {
     }
 
     @Override
-    public void logSevere(String message, Object... args) {
+    public void logSevere(String message, String... args) {
         super.logSevere(message, args);
     }
 
     @Override
-    public void logWarning(String message, Object... args) {
+    public void logWarning(String message, String... args) {
         super.logWarning(message, args);
     }
+
+
 
     public String getTitle() {
         return title;
