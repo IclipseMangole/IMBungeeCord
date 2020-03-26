@@ -18,7 +18,7 @@ import static de.Iclipse.IMBungee.Data.dsp;
 import static de.Iclipse.IMBungee.Data.prefix;
 
 public class cmd_friend {
-    /*
+
     private StringBuilder builder;
 
     @IMCommand(
@@ -31,7 +31,6 @@ public class cmd_friend {
             permissions = "im.cmd.friend"
     )
     public void friend(ProxiedPlayer p) {
-        if (p.hasPermission("im.cmd.friend.help*")) {
             builder = new StringBuilder();
             builder.append(Data.prefix + "§7§lHilfsübersicht:§r\n");
             add(p, "list");
@@ -40,7 +39,6 @@ public class cmd_friend {
             add(p, "accept");
             add(p, "decline");
             p.sendMessage(builder.toString());
-        }
         ;
     }
 
@@ -213,5 +211,4 @@ public class cmd_friend {
     private void add(CommandSender sender, String command) {
         builder.append("\n" + Data.symbol + "§e" + dsp.get("friend." + command + ".usage", sender) + "§8: §7 " + dsp.get("friend." + command + ".description", sender) + ChatColor.RESET);
     }
-     */
 }
