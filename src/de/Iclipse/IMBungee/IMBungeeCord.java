@@ -1,6 +1,7 @@
 package de.Iclipse.IMBungee;
 
 import de.Iclipse.IMBungee.Functions.Commands.cmd_friend;
+import de.Iclipse.IMBungee.Functions.Commands.cmd_hub;
 import de.Iclipse.IMBungee.Functions.Commands.cmd_message;
 import de.Iclipse.IMBungee.Functions.Listener.ChannelListener;
 import de.Iclipse.IMBungee.Functions.Listener.JoinListener;
@@ -50,6 +51,7 @@ public final class IMBungeeCord extends Plugin {
     public void registerCommands(){
         register(cmd_message.class, true);
         register(cmd_friend.class, true);
+        register(cmd_hub.class, true);
     }
 
     public void registerListener(){
