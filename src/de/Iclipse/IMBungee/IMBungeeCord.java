@@ -16,6 +16,7 @@ import de.Iclipse.IMBungee.Util.Executor.BungeeExecutor;
 import de.Iclipse.IMBungee.Util.Executor.ThreadExecutor;
 import de.Iclipse.IMBungee.Util.IScheduler;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -74,13 +75,23 @@ public final class IMBungeeCord extends Plugin {
             langs.put("EN", langEN);
             Data.dsp = new Dispatcher(this, langs);
             System.out.println(Data.prefix + "Loaded languages!");
-        }catch(MissingResourceException | NullPointerException e){
+        } catch (MissingResourceException | NullPointerException e) {
             System.out.println("Reload oder Bundle not found!");
         }
     }
 
     private Map<String, Command> commandMap = new HashMap<>();
     private List<Object[]> unavailableSubcommands = new ArrayList<>();
+
+    public static boolean isServerOnline(ServerInfo info) {
+        final boolean[] online = {false};
+        info.ping((ping, throwable) -> {
+            if (throwable == null) {
+                online[0] = true;
+            }
+        });
+        return online[0];
+    }
 
     public void register(Class functionClass) {
         register(functionClass, false);

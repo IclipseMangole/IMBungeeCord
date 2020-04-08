@@ -1,7 +1,6 @@
 package de.Iclipse.IMBungee.Functions.Commands;
 
 import de.Iclipse.IMBungee.Data;
-import de.Iclipse.IMBungee.Functions.MySQL.MySQL;
 import de.Iclipse.IMBungee.Functions.MySQL.MySQL_Friend;
 import de.Iclipse.IMBungee.Functions.MySQL.MySQL_User;
 import de.Iclipse.IMBungee.Util.Command.IMCommand;
@@ -31,14 +30,14 @@ public class cmd_friend {
             permissions = "im.cmd.friend"
     )
     public void friend(ProxiedPlayer p) {
-            builder = new StringBuilder();
-            builder.append(Data.prefix + "§7§lHilfsübersicht:§r\n");
-            add(p, "list");
-            add(p, "add");
-            add(p, "remove");
-            add(p, "accept");
-            add(p, "decline");
-            p.sendMessage(builder.toString());
+        builder = new StringBuilder();
+        builder.append(Data.prefix + "§7§lHilfsübersicht:§r\n");
+        addToOverview(p, "list");
+        addToOverview(p, "add");
+        addToOverview(p, "remove");
+        addToOverview(p, "accept");
+        addToOverview(p, "decline");
+        p.sendMessage(builder.toString());
         ;
     }
 
@@ -208,7 +207,7 @@ public class cmd_friend {
         }
     }
 
-    private void add(CommandSender sender, String command) {
+    private void addToOverview(CommandSender sender, String command) {
         builder.append("\n" + Data.symbol + "§e" + dsp.get("friend." + command + ".usage", sender) + "§8: §7 " + dsp.get("friend." + command + ".description", sender) + ChatColor.RESET);
     }
 }
