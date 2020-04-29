@@ -3,12 +3,10 @@ package de.Iclipse.IMBungee;
 import de.Iclipse.IMBungee.Functions.Commands.cmd_friend;
 import de.Iclipse.IMBungee.Functions.Commands.cmd_hub;
 import de.Iclipse.IMBungee.Functions.Commands.cmd_message;
-import de.Iclipse.IMBungee.Functions.Listener.ChannelListener;
-import de.Iclipse.IMBungee.Functions.Listener.JoinListener;
-import de.Iclipse.IMBungee.Functions.Listener.MOTDListener;
-import de.Iclipse.IMBungee.Functions.Listener.QuitListener;
+import de.Iclipse.IMBungee.Functions.Listener.*;
 import de.Iclipse.IMBungee.Functions.MySQL.MySQL;
 import de.Iclipse.IMBungee.Functions.MySQL.MySQL_Friend;
+import de.Iclipse.IMBungee.Functions.Scheduler;
 import de.Iclipse.IMBungee.Util.Command.BungeeCommand;
 import de.Iclipse.IMBungee.Util.Command.IMCommand;
 import de.Iclipse.IMBungee.Util.Dispatching.Dispatcher;
@@ -16,7 +14,6 @@ import de.Iclipse.IMBungee.Util.Executor.BungeeExecutor;
 import de.Iclipse.IMBungee.Util.Executor.ThreadExecutor;
 import de.Iclipse.IMBungee.Util.IScheduler;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -41,12 +38,15 @@ public final class IMBungeeCord extends Plugin {
         registerListener();
         ProxyServer.getInstance().registerChannel("im:main");
         createTables();
+        ProxyServer.getInstance().getServers().forEach((name, info) -> Data.serverstatus.put(info, false));
+        Scheduler.startScheduler();
     }
 
     @Override
     public void onDisable() {
         super.onDisable();
         MySQL.close();
+        Scheduler.stopScheduler();
     }
 
     public void registerCommands(){
@@ -60,6 +60,7 @@ public final class IMBungeeCord extends Plugin {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this, new QuitListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this, new ChannelListener());
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new KickListener());
     }
 
     public void createTables(){
@@ -80,18 +81,10 @@ public final class IMBungeeCord extends Plugin {
         }
     }
 
+
     private Map<String, Command> commandMap = new HashMap<>();
     private List<Object[]> unavailableSubcommands = new ArrayList<>();
 
-    public static boolean isServerOnline(ServerInfo info) {
-        final boolean[] online = {false};
-        info.ping((ping, throwable) -> {
-            if (throwable == null) {
-                online[0] = true;
-            }
-        });
-        return online[0];
-    }
 
     public void register(Class functionClass) {
         register(functionClass, false);

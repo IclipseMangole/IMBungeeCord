@@ -1,8 +1,10 @@
 package de.Iclipse.IMBungee;
 
 import de.Iclipse.IMBungee.Util.Dispatching.Dispatcher;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class Data {
@@ -16,4 +18,6 @@ public class Data {
     public static String warning;
     public static ResourceBundle langDE;
     public static ResourceBundle langEN;
+
+    public static HashMap<ServerInfo, Boolean> serverstatus = new HashMap<>();
 }
