@@ -3,10 +3,8 @@ package de.Iclipse.IMBungee.Util.Command;
 
 import com.google.common.base.Defaults;
 import com.google.common.base.Joiner;
-import de.Iclipse.IMBungee.Functions.MySQL.MySQL_User;
 import de.Iclipse.IMBungee.Util.Executor.ThreadExecutor;
 import de.Iclipse.IMBungee.Util.TypeUtils;
-import de.Iclipse.IMBungee.Util.UUIDFetcher;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -101,6 +99,7 @@ public class CommandProcessor<S> {
 
         //Argumentanzahl
         if (command.minArgs() > -1 && args.length - wildcards < command.minArgs() || command.maxArgs() > -1 && args.length - wildcards > command.maxArgs()) {
+            System.out.println("Argumentenzahl");
             dsp.send((ProxiedPlayer) sender, "cmd.usage", dsp.get(command.usage(), (CommandSender) sender));
             return;
         }
@@ -123,6 +122,7 @@ public class CommandProcessor<S> {
                 j++;
             } catch (Exception ex) {
                 ex.printStackTrace();
+                System.out.println("Paramter nach Typ");
                 dsp.send((CommandSender) sender, "cmd.usage", dsp.get(command.usage(), (CommandSender) sender));
                 return;
             }

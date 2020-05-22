@@ -1,11 +1,11 @@
 package de.Iclipse.IMBungee;
 
-import de.Iclipse.IMBungee.Functions.Commands.cmd_friend;
-import de.Iclipse.IMBungee.Functions.Commands.cmd_hub;
-import de.Iclipse.IMBungee.Functions.Commands.cmd_message;
+import de.Iclipse.IMBungee.Functions.Commands.FriendCMD;
+import de.Iclipse.IMBungee.Functions.Commands.Hub;
+import de.Iclipse.IMBungee.Functions.Commands.Message;
 import de.Iclipse.IMBungee.Functions.Listener.*;
+import de.Iclipse.IMBungee.Functions.MySQL.Friend;
 import de.Iclipse.IMBungee.Functions.MySQL.MySQL;
-import de.Iclipse.IMBungee.Functions.MySQL.MySQL_Friend;
 import de.Iclipse.IMBungee.Functions.Scheduler;
 import de.Iclipse.IMBungee.Util.Command.BungeeCommand;
 import de.Iclipse.IMBungee.Util.Command.IMCommand;
@@ -36,7 +36,6 @@ public final class IMBungeeCord extends Plugin {
         loadResourceBundles();
         registerCommands();
         registerListener();
-        ProxyServer.getInstance().registerChannel("im:main");
         createTables();
         ProxyServer.getInstance().getServers().forEach((name, info) -> Data.serverstatus.put(info, false));
         Scheduler.startScheduler();
@@ -49,10 +48,10 @@ public final class IMBungeeCord extends Plugin {
         Scheduler.stopScheduler();
     }
 
-    public void registerCommands(){
-        register(cmd_message.class, true);
-        register(cmd_friend.class, true);
-        register(cmd_hub.class, true);
+    public void registerCommands() {
+        register(Message.class);
+        register(Hub.class);
+        register(FriendCMD.class);
     }
 
     public void registerListener(){
@@ -64,7 +63,7 @@ public final class IMBungeeCord extends Plugin {
     }
 
     public void createTables(){
-        MySQL_Friend.createFriendTable();
+        Friend.createFriendTable();
     }
 
     public void loadResourceBundles(){
@@ -144,5 +143,20 @@ public final class IMBungeeCord extends Plugin {
                 }
             }
         }
+    }
+
+    public static ArrayList getPage(ArrayList list, int anzPerPage, int page) {
+        ArrayList pageList = new ArrayList<>();
+        for (int i = page * anzPerPage; i < (page + 1) * anzPerPage && i < list.size(); i++) {
+            list.add(list.get(i));
+        }
+        return pageList;
+    }
+
+    public static boolean hasPage(ArrayList list, int anzPerPage, int page) {
+        if (list.size() / anzPerPage > page && page >= 0) {
+            return true;
+        }
+        return false;
     }
 }

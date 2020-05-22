@@ -13,8 +13,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
-import static de.Iclipse.IMBungee.Functions.MySQL.MySQL_User.getLanguage;
-import static de.Iclipse.IMBungee.Functions.MySQL.MySQL_User.isUserExists;
+import static de.Iclipse.IMBungee.Functions.MySQL.User.getLanguage;
+import static de.Iclipse.IMBungee.Functions.MySQL.User.isUserExists;
 
 
 public abstract class Dispatch<R> {

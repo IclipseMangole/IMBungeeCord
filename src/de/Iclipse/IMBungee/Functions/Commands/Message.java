@@ -1,6 +1,6 @@
 package de.Iclipse.IMBungee.Functions.Commands;
 
-import de.Iclipse.IMBungee.Functions.MySQL.MySQL_UserSettings;
+import de.Iclipse.IMBungee.Functions.MySQL.UserSettings;
 import de.Iclipse.IMBungee.Util.Command.IMCommand;
 import de.Iclipse.IMBungee.Util.UUIDFetcher;
 import net.md_5.bungee.api.ChatColor;
@@ -10,7 +10,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import static de.Iclipse.IMBungee.Data.*;
 
-public class cmd_message {
+public class Message {
     @IMCommand(
             name = "message",
             aliases = {"tell", "msg"},
@@ -30,13 +30,24 @@ public class cmd_message {
                             if (isAllowed((ProxiedPlayer) sender, entry)) {
                                 sender.sendMessage(prefix + ((ProxiedPlayer) sender).getDisplayName() + " " + symbol + " " + entry.getDisplayName() + "§7: " + message[0]);
                                 entry.sendMessage(prefix + ((ProxiedPlayer) sender).getDisplayName() + " " + symbol + " " + entry.getDisplayName() + "§7: " + message[0]);
+                                if (!reactions.containsKey(name)) {
+                                    reactions.put(name, sender.getName());
+                                } else {
+                                    reactions.replace(name, sender.getName());
+                                }
                             } else {
                                 dsp.send(sender, "message.blocked");
                             }
                             contains[0] = true;
                         } else {
-                            sender.sendMessage(prefix + "§cServer " + symbol + " " + entry.getDisplayName() + "§7: " + message[0]);
-                            entry.sendMessage(prefix + "§cServer " + symbol + " " + entry.getDisplayName() + "§7: " + message[0]);
+                            sender.sendMessage(prefix + "§5Server " + symbol + " " + entry.getDisplayName() + "§7: " + message[0]);
+                            entry.sendMessage(prefix + "§5Server " + symbol + " " + entry.getDisplayName() + "§7: " + message[0]);
+                            if (!reactions.containsKey(name)) {
+                                reactions.put(name, "Server");
+                            } else {
+                                reactions.replace(name, "Server");
+                            }
+                            contains[0] = true;
                         }
                     }
                 });
@@ -48,17 +59,17 @@ public class cmd_message {
             }
         } else {
             if (sender instanceof ProxiedPlayer) {
-                switch (MySQL_UserSettings.getInt(UUIDFetcher.getUUID(sender.getName()), "message")) {
+                switch (UserSettings.getInt(UUIDFetcher.getUUID(sender.getName()), "message")) {
                     case 0:
-                        MySQL_UserSettings.setInt(UUIDFetcher.getUUID(sender.getName()), "message", 1);
+                        UserSettings.setInt(UUIDFetcher.getUUID(sender.getName()), "message", 1);
                         dsp.send(sender, "message.friends");
                         break;
                     case 1:
-                        MySQL_UserSettings.setInt(UUIDFetcher.getUUID(sender.getName()), "message", 2);
+                        UserSettings.setInt(UUIDFetcher.getUUID(sender.getName()), "message", 2);
                         dsp.send(sender, "message.nobody");
                         break;
                     case 2:
-                        MySQL_UserSettings.setInt(UUIDFetcher.getUUID(sender.getName()), "message", 0);
+                        UserSettings.setInt(UUIDFetcher.getUUID(sender.getName()), "message", 0);
                         dsp.send(sender, "message.all");
                         break;
                 }
@@ -68,8 +79,39 @@ public class cmd_message {
         }
     }
 
+
+    @IMCommand(
+            name = "react",
+            aliases = {"r"},
+            permissions = "im.cmd.message",
+            minArgs = 2,
+            usage = "react.usage",
+            description = "react.description"
+    )
+    public void react(CommandSender sender, String string) {
+        final String[] message = {string};
+        String name;
+        if (sender instanceof ProxiedPlayer) {
+            name = sender.getName();
+        } else {
+            name = "Server";
+        }
+
+        if (reactions.containsKey(name)) {
+            if (!reactions.get(name).equals("Server")) {
+                ((ProxiedPlayer) sender).chat("/msg " + reactions.get(name) + " " + string);
+            } else {
+                sender.sendMessage(prefix + name + " " + symbol + " §5Serve§7: " + message[0]);
+                ProxyServer.getInstance().getPlayer(name).sendMessage(prefix + name + " " + symbol + " §5Serve§7: " + message[0]);
+            }
+        } else {
+            dsp.send(sender, "react.noMessageReceived");
+        }
+    }
+
+
     public static boolean isAllowed(ProxiedPlayer sender, ProxiedPlayer player) {
-        switch (MySQL_UserSettings.getInt(player.getUniqueId(), "message")) {
+        switch (UserSettings.getInt(player.getUniqueId(), "message")) {
             case 0:
                 return true;
             case 1:

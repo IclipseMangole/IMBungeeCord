@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static de.Iclipse.IMBungee.Data.dsp;
 
-public class cmd_hub {
+public class Hub {
     @IMCommand(
             name = "hub",
             permissions = "im.cmd.hub",
@@ -19,10 +19,10 @@ public class cmd_hub {
             usage = "hub.usage",
             noConsole = true
     )
-    public void hub(ProxiedPlayer p){
-        if(p.getServer().getInfo().getName().contains("Lobby")){
+    public void Hub(ProxiedPlayer p) {
+        if (p.getServer().getInfo().getName().contains("Lobby")) {
             dsp.send(p, "hub.already");
-        }else {
+        } else {
             System.out.println(Data.serverstatus.get(ProxyServer.getInstance().getServerInfo("Lobby01")));
             if (Data.serverstatus.get(ProxyServer.getInstance().getServerInfo("Lobby01"))) {
                 dsp.send(p, "hub.successfull");

@@ -7,9 +7,10 @@ import net.md_5.bungee.event.EventHandler;
 public class KickListener implements Listener {
     @EventHandler
     public void onKick(ServerKickEvent e) {
-        System.out.println("Kicked");
-        e.setCancelled(true);
-        e.getPlayer().sendMessage(e.getKickReasonComponent());
-        e.getPlayer().chat("/hub");
+        if (e.getPlayer().isConnected()) {
+            e.setCancelled(true);
+            e.getPlayer().sendMessage(e.getKickReasonComponent());
+            e.getPlayer().chat("/hub");
+        }
     }
 }

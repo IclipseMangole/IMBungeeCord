@@ -4,13 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class MySQL_UserSettings {
-    public static void createUserSettingsTable(){
+public class UserSettings {
+    public static void createUserSettingsTable() {
         MySQL.update("CREATE TABLE IF NOT EXISTS usersettings (id MEDIUMINT NOT NULL AUTO_INCREMENT, uuid VARCHAR(60), `key` VARCHAR(256), `value` VARCHAR(256), PRIMARY KEY (id))");
     }
 
-    public static void createUserSetting(UUID uuid, String key, String value){
-        if(!isSettingExists(uuid, key)) {
+    public static void createUserSetting(UUID uuid, String key, String value) {
+        if (!isSettingExists(uuid, key)) {
             MySQL.update("INSERT INTO usersettings (uuid, `key`, `value`) VALUES ('" + uuid + "', '" + key + "', '" + value + "')");
         }
     }

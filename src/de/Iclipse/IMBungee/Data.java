@@ -19,5 +19,6 @@ public class Data {
     public static ResourceBundle langDE;
     public static ResourceBundle langEN;
 
+    public static HashMap<String, String> reactions = new HashMap<>();
     public static HashMap<ServerInfo, Boolean> serverstatus = new HashMap<>();
 }

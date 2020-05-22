@@ -23,5 +23,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.yaml:snakeyaml:1.25" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.guava:guava:21.0" level="project" />
     <orderEntry type="library" name="BungeeCord" level="project" />
+    <orderEntry type="library" name="BungeePerms-4.0-dev-106" level="project" />
   </component>
 </module>
