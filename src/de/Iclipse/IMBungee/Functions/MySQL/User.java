@@ -117,7 +117,9 @@ public class User {
     public static long getLastTime(UUID uuid) {
         try {
             ResultSet rs = MySQL.querry("SELECT lastseen FROM `user` WHERE uuid = '" + uuid + "'");
-            return rs.getLong("lastseen");
+            if (rs.next()) {
+                return rs.getLong("lastseen");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

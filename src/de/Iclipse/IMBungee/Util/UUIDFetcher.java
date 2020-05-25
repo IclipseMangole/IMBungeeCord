@@ -90,7 +90,6 @@ public class UUIDFetcher {
 
             return data.id;
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return null;

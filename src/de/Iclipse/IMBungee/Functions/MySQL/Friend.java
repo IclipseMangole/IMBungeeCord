@@ -17,19 +17,20 @@ public class Friend {
     public static void createRequest(UUID user, UUID other) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date time = Date.from(Instant.now());
-        MySQL.update("INSERT INTO friend WHERE (user, other, accepted, favorite, date) VALUES ('" + user + "', '" + other + "', '" + false + "', '" + false + "', '" + sdf.format(time) + "')");
+        MySQL.update("INSERT INTO friend (user, other, accepted, favorite, date) VALUES ('" + user + "', '" + other + "', " + false + ", " + false + ", '" + sdf.format(time) + "')");
     }
 
     public static void accept(UUID user, UUID friend) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date time = Date.from(Instant.now());
-        MySQL.update("UPDATE friend SET accepted = '" + true + "', date = '" + sdf.format(time) + "' WHERE other = '" + user + "' AND user = '" + friend + "'");
-        MySQL.update("INSERT INTO friend WHERE (user, other, accepted, favorite, date) VALUES ('" + user + "', '" + friend + "', '" + true + "', '" + false + "', '" + sdf.format(time) + "')");
+        MySQL.update("UPDATE friend SET accepted = " + true + ", date = '" + sdf.format(time) + "' WHERE other = '" + user + "' AND user = '" + friend + "'");
+        MySQL.update("INSERT INTO friend (user, other, accepted, favorite, date) VALUES ('" + user + "', '" + friend + "', " + true + ", " + false + ", '" + sdf.format(time) + "')");
     }
 
     public static boolean areFriends(UUID user, UUID friend) {
         try {
-            ResultSet rs = MySQL.querry("SELECT id FROM friend WHERE user = '" + user + "' AND other = '" + friend + "' AND accepted = 'true'");
+            ResultSet rs = MySQL.querry("SELECT id FROM friend WHERE user = '" + user + "' AND other = '" + friend + "' AND accepted = " + true);
+            System.out.println("SELECT id FROM friend WHERE user = '" + user + "' AND other = '" + friend + "' AND accepted = " + true);
             return rs.next();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -39,7 +40,7 @@ public class Friend {
 
     public static boolean isRequestedBy(UUID user, UUID other) {
         try {
-            ResultSet rs = MySQL.querry("SELECT id FROM friend WHERE other = '" + user + "' AND user = '" + other + "' AND accepted = 'false'");
+            ResultSet rs = MySQL.querry("SELECT id FROM friend WHERE other = '" + user + "' AND user = '" + other + "' AND accepted = " + false);
             return rs.next();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -50,7 +51,7 @@ public class Friend {
     public static ArrayList<UUID> getRequests(UUID user) {
         ArrayList<UUID> list = new ArrayList<>();
         try {
-            ResultSet rs = MySQL.querry("SELECT user FROM friend WHERE other = '" + user + "' AND accepted = 'false' ORDER BY date");
+            ResultSet rs = MySQL.querry("SELECT user FROM friend WHERE other = '" + user + "' AND accepted = " + false + " ORDER BY date");
             while (rs.next()) {
                 list.add(UUID.fromString(rs.getString("user")));
             }
@@ -63,7 +64,7 @@ public class Friend {
     public static ArrayList<UUID> getFriends(UUID user) {
         ArrayList<UUID> list = new ArrayList<>();
         try {
-            ResultSet rs = MySQL.querry("SELECT other FROM friend WHERE user = '" + user + "' AND accepted = 'true' ORDER BY date ASC");
+            ResultSet rs = MySQL.querry("SELECT other FROM friend WHERE user = '" + user + "' AND accepted = " + true);
             while (rs.next()) {
                 list.add(UUID.fromString(rs.getString("other")));
             }
@@ -89,14 +90,14 @@ public class Friend {
             ResultSet rs;
             switch (option) {
                 case 0:
-                    rs = MySQL.querry("SELECT other FROM friend WHERE user = '" + user + "' AND accepted = '" + true + "'");
+                    rs = MySQL.querry("SELECT other FROM friend WHERE user = '" + user + "' AND accepted = " + true);
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
                     Collections.sort(list, Comparator.comparing(UUIDFetcher::getName));
                     break;
                 case 1:
-                    rs = MySQL.querry("SELECT other FROM friend WHERE user = '" + user + "' AND accepted = '" + true + "'");
+                    rs = MySQL.querry("SELECT other FROM friend WHERE user = '" + user + "' AND accepted = " + true);
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
@@ -104,63 +105,63 @@ public class Friend {
                     Collections.reverse(list);
                     break;
                 case 2:
-                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.user = user.uuid AND accepted = '" + true + "' AND favorite = '" + true + "' AND user.lastseen = -1");
+                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.other = user.uuid AND accepted = " + true + " AND favorite = " + true + " AND user.lastseen = -1");
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
-                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.user = user.uuid AND accepted = '" + true + "' AND favorite = '" + true + "' AND user.lastseen != -1 ORDER BY user.lastseen DESC");
+                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.other = user.uuid AND accepted = " + true + " AND favorite = " + true + " AND user.lastseen != -1 ORDER BY user.lastseen DESC");
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
-                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.user = user.uuid AND accepted = '" + true + "' AND favorite = '" + false + "' AND user.lastseen = -1");
+                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.other = user.uuid AND accepted = " + true + " AND favorite = " + false + " AND user.lastseen = -1");
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
-                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.user = user.uuid AND accepted = '" + true + "' AND favorite = '" + false + "' AND user.lastseen != -1 ORDER BY user.lastseen DESC");
+                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.other = user.uuid AND accepted = " + true + " AND favorite = " + false + " AND user.lastseen != -1 ORDER BY user.lastseen DESC");
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
                     break;
                 case 3:
-                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.user = user.uuid AND accepted = '" + true + "' AND user.lastseen = -1");
+                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.other = user.uuid AND accepted = " + true + " AND user.lastseen = -1");
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
-                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.user = user.uuid AND accepted = '" + true + "' AND user.lastseen != -1 ORDER BY user.lastseen DESC");
+                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.other = user.uuid AND accepted = " + true + " AND user.lastseen != -1 ORDER BY user.lastseen DESC");
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
                     break;
                 case 4:
-                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.user = user.uuid AND accepted = '" + true + "' AND user.lastseen != -1 ORDER BY user.lastseen ASC");
+                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.other = user.uuid AND accepted = " + true + " AND user.lastseen != -1 ORDER BY user.lastseen ASC");
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
-                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.user = user.uuid AND accepted = '" + true + "' AND user.lastseen = -1");
+                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND friend.other = user.uuid AND accepted = " + true + " AND user.lastseen = -1");
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
                     break;
                 case 5:
-                    rs = MySQL.querry("SELECT other FROM friend WHERE user = '" + user + "' AND accepted = '" + true + "' ORDER BY date ASC");
+                    rs = MySQL.querry("SELECT other FROM friend WHERE user = '" + user + "' AND accepted = " + true + " ORDER BY date ASC");
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
                     break;
                 case 6:
-                    rs = MySQL.querry("SELECT other FROM friend WHERE user = '" + user + "' AND accepted = '" + true + "' ORDER BY date DESC");
+                    rs = MySQL.querry("SELECT other FROM friend WHERE user = '" + user + "' AND accepted = " + true + " ORDER BY date DESC");
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
                     break;
                 case 7:
-                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND accepted = '" + true + "' AND friend.user = user.uuid ORDER BY user.onlinetime DESC");
+                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND accepted = " + true + " AND friend.other = user.uuid ORDER BY user.onlinetime DESC");
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
                     break;
                 default:
-                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND accepted = '" + true + "' AND friend.user = user.uuid ORDER BY user.onlinetime ASC");
+                    rs = MySQL.querry("SELECT other FROM friend, user WHERE friend.user = '" + user + "' AND accepted = " + true + " AND friend.other = user.uuid ORDER BY user.onlinetime ASC");
                     while (rs.next()) {
                         list.add(UUID.fromString(rs.getString("other")));
                     }
@@ -174,7 +175,7 @@ public class Friend {
 
 
     public static void deleteFriend(UUID uuid, UUID friend) {
-        MySQL.update("DELETE FROM friend WHERE (requestReceiver = '" + uuid + "' AND requestCreator = '" + friend + "') OR (requestCreator = '" + uuid + "' AND requestReceiver = '" + friend + "')");
+        MySQL.update("DELETE FROM friend WHERE (user = '" + uuid + "' AND other = '" + friend + "') OR (other = '" + uuid + "' AND user = '" + friend + "')");
     }
 
     public static void setDate(UUID uuid, UUID friend, Date time) {
@@ -183,7 +184,7 @@ public class Friend {
     }
 
     public static void setFavorite(UUID user, UUID friend, boolean favorite) {
-        MySQL.update("UPDATE friend SET favorite = '" + favorite + "' WHERE user = '" + user + "' AND other = '" + friend + "'");
+        MySQL.update("UPDATE friend SET favorite = " + favorite + " WHERE user = '" + user + "' AND other = '" + friend + "'");
     }
 
     public static boolean isFavorite(UUID user, UUID friend) {

@@ -13,7 +13,10 @@ import de.Iclipse.IMBungee.Util.Dispatching.Dispatcher;
 import de.Iclipse.IMBungee.Util.Executor.BungeeExecutor;
 import de.Iclipse.IMBungee.Util.Executor.ThreadExecutor;
 import de.Iclipse.IMBungee.Util.IScheduler;
+import net.alpenblock.bungeeperms.BungeePermsAPI;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -54,7 +57,7 @@ public final class IMBungeeCord extends Plugin {
         register(FriendCMD.class);
     }
 
-    public void registerListener(){
+    public void registerListener() {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new MOTDListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this, new QuitListener());
@@ -62,11 +65,11 @@ public final class IMBungeeCord extends Plugin {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new KickListener());
     }
 
-    public void createTables(){
+    public void createTables() {
         Friend.createFriendTable();
     }
 
-    public void loadResourceBundles(){
+    public void loadResourceBundles() {
         try {
             HashMap<String, ResourceBundle> langs = new HashMap<>();
             langDE = ResourceBundle.getBundle("i18n.langDE");
@@ -136,6 +139,7 @@ public final class IMBungeeCord extends Plugin {
         } else {
             Command pluginCommand = commandMap.get(cmd.parent()[0]);
             if (pluginCommand == null) {
+                System.out.println("Plugincommand = null");
                 unavailableSubcommands.add(new Object[]{function, method});
             } else {
                 if (pluginCommand instanceof BungeeCommand) {
@@ -148,15 +152,27 @@ public final class IMBungeeCord extends Plugin {
     public static ArrayList getPage(ArrayList list, int anzPerPage, int page) {
         ArrayList pageList = new ArrayList<>();
         for (int i = page * anzPerPage; i < (page + 1) * anzPerPage && i < list.size(); i++) {
-            list.add(list.get(i));
+            pageList.add(list.get(i));
         }
         return pageList;
     }
 
     public static boolean hasPage(ArrayList list, int anzPerPage, int page) {
-        if (list.size() / anzPerPage > page && page >= 0) {
+        if ((double) list.size() / (double) anzPerPage > page && page >= 0) {
             return true;
         }
         return false;
+    }
+
+    public static int maxPage(ArrayList list, int anzPerPage) {
+        return (int) Math.ceil((double) list.size() / (double) anzPerPage);
+    }
+
+    public static String getPrefix(ProxiedPlayer p) {
+        return BungeePermsAPI.groupDisplay(BungeePermsAPI.userMainGroup(p.getName()), ProxyServer.getInstance().getName(), null).replace(ChatColor.RESET.toString(), "");
+    }
+
+    public static String getDisplayname(ProxiedPlayer p) {
+        return getPrefix(p);
     }
 }

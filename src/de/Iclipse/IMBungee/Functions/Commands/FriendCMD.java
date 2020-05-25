@@ -7,7 +7,6 @@ import de.Iclipse.IMBungee.Functions.MySQL.UserSettings;
 import de.Iclipse.IMBungee.IMBungeeCord;
 import de.Iclipse.IMBungee.Util.Command.IMCommand;
 import de.Iclipse.IMBungee.Util.UUIDFetcher;
-import net.alpenblock.bungeeperms.BungeePermsAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -39,7 +38,7 @@ public class FriendCMD {
         addToOverview(p, "add");
         addToOverview(p, "remove");
         addToOverview(p, "jump");
-        p.sendMessage(builder.toString());
+        p.sendMessage(new TextComponent(builder.toString()));
     }
 
     @IMCommand(
@@ -52,31 +51,21 @@ public class FriendCMD {
             noConsole = true,
             permissions = "im.cmd.friend.list"
     )
-    public void list(ProxiedPlayer p, String pageString) {
-        int page;
-        if (pageString == null) {
+    public void flist(ProxiedPlayer p, Integer page) {
+        if (page == null) {
             page = 0;
-        } else {
-            try {
-                page = Integer.parseInt(pageString);
-            } catch (NumberFormatException e) {
-                dsp.send(p, "friend.list.usage");
-                return;
-            }
-            if (page > 0) {
-                page--;
-            } else {
-                dsp.send(p, "friend.list.usage");
-            }
         }
         ArrayList<UUID> friends = Friend.getFriendsSorted(p.getUniqueId(), UserSettings.getInt(UUIDFetcher.getUUID(p.getName()), "friend_sort"));
+        if (!IMBungeeCord.hasPage(friends, 8, page)) {
+            page = 0;
+        }
         ArrayList<UUID> shown = IMBungeeCord.getPage(friends, 8, page);
         if (shown.size() > 0) {
             dsp.send(p, "friend.list.header", page + 1 + "", friends.size() / 8 + "");
             shown.forEach(user -> {
                 ProxiedPlayer f = ProxyServer.getInstance().getPlayer(user);
                 if (f != null) {
-                    dsp.send(p, "friend.list.format.online", BungeePermsAPI.userPrefix(user.toString(), f.getServer().getInfo().getName(), null) + f.getName(), f.getServer().getInfo().getName());
+                    dsp.send(p, "friend.list.format.online", IMBungeeCord.getPrefix(f) + f.getName(), f.getServer().getInfo().getName());
                 } else {
                     int days = (int) (System.currentTimeMillis() - User.getLastTime(user)) / (1000 * 60 * 60 * 24);
                     dsp.send(p, "friend.list.format.offline", UUIDFetcher.getName(user) + ": §cOffline", days + "");
@@ -97,7 +86,7 @@ public class FriendCMD {
             noConsole = true,
             permissions = "im.cmd.friend.add"
     )
-    public void add(ProxiedPlayer p, String friend) {
+    public void fadd(ProxiedPlayer p, String friend) {
         UUID uuid = p.getUniqueId();
         UUID frienduuid;
         try {
@@ -114,21 +103,22 @@ public class FriendCMD {
                         ProxiedPlayer f = ProxyServer.getInstance().getPlayer(frienduuid);
                         if (f != null) {
                             dsp.send(f, "friend.add.request", p.getDisplayName());
-                            TextComponent base = new TextComponent(dsp.get("friend.add.request.click", dsp.getLanguages().get(User.getLanguage(frienduuid)), true));
-                            TextComponent accept = new TextComponent(dsp.get("friend.add.request.click.accept", dsp.getLanguages().get(User.getLanguage(frienduuid))));
+                            TextComponent base = new TextComponent(Data.prefix);
+                            TextComponent accept = new TextComponent(dsp.get("friend.add.request.click.accept", f));
                             accept.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/friend add " + p.getName()));
                             base.addExtra(accept);
-                            TextComponent deny = new TextComponent(dsp.get("friend.add.request.click.deny", dsp.getLanguages().get(User.getLanguage(frienduuid))));
+                            TextComponent deny = new TextComponent(dsp.get("friend.add.request.click.deny", f));
                             deny.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/friend remove " + p.getName()));
                             base.addExtra(deny);
                             f.sendMessage(base);
                         }
+                        dsp.send(p, "friend.add.sent");
                     } else {
                         Friend.accept(uuid, frienduuid);
                         ProxiedPlayer f = ProxyServer.getInstance().getPlayer(frienduuid);
                         if (f != null) {
-                            dsp.send(p, "friend.add.accepted", BungeePermsAPI.userPrefix(frienduuid.toString(), f.getServer().getInfo().getName(), null) + f.getName());
-                            dsp.get("friend.add.accepted", dsp.getLanguages().get(User.getLanguage(frienduuid)), true, p.getDisplayName());
+                            dsp.send(p, "friend.add.accepted", IMBungeeCord.getPrefix(f) + f.getName());
+                            dsp.send(f, "friend.add.accepted", p.getDisplayName());
                         } else {
                             dsp.send(p, "friend.add.accepted", "§e" + UUIDFetcher.getName(frienduuid));
                         }
@@ -154,7 +144,7 @@ public class FriendCMD {
             noConsole = true,
             permissions = "im.cmd.friend.remove"
     )
-    public void remove(ProxiedPlayer p, String friend) {
+    public void fremove(ProxiedPlayer p, String friend) {
         UUID uuid = UUIDFetcher.getUUID(p.getName());
         UUID frienduuid;
         try {
@@ -167,6 +157,15 @@ public class FriendCMD {
         if (Friend.areFriends(uuid, frienduuid)) {
             Friend.deleteFriend(uuid, frienduuid);
             dsp.send(p, "friend.remove.successfull");
+            ProxiedPlayer f = ProxyServer.getInstance().getPlayer(frienduuid);
+            if (f != null) {
+                dsp.send(f, "friend.remove.removed", IMBungeeCord.getDisplayname(p));
+            }
+        } else if (Friend.isRequestedBy(p.getUniqueId(), frienduuid)) {
+            ProxiedPlayer f = ProxyServer.getInstance().getPlayer(frienduuid);
+            if (f != null) {
+                dsp.send(f, "friend.remove.denied", IMBungeeCord.getDisplayname(p));
+            }
         } else {
             dsp.send(p, "friend.remove.noFriend");
         }
@@ -182,7 +181,7 @@ public class FriendCMD {
             permissions = "im.cmd.friend.jump",
             parent = "friend"
     )
-    public void jump(ProxiedPlayer p, String name) {
+    public void fjump(ProxiedPlayer p, String name) {
         ProxiedPlayer f = ProxyServer.getInstance().getPlayer(name);
         if (f != null) {
             if (Friend.areFriends(p.getUniqueId(), f.getUniqueId())) {
