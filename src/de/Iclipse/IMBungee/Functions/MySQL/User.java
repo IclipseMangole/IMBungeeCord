@@ -1,6 +1,8 @@
 package de.Iclipse.IMBungee.Functions.MySQL;
 
 
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -20,14 +22,13 @@ public class User {
 
 
     public static void createUserTable() {
-        MySQL.update("CREATE TABLE IF NOT EXISTS user (uuid VARCHAR(60), points INT(10), onlinetime INT(15), firstJoin DATETIME, lastseen BIGINT, lang VARCHAR(10), blocks INT(10), newsread DATETIME)");
+        MySQL.update("CREATE TABLE IF NOT EXISTS user (uuid VARCHAR(60), schnitzel INT(10), onlinetime BIGINT, firstJoin DATETIME, lastseen BIGINT, server VARCHAR(20), lang VARCHAR(10), blocks INT(10), newsread DATETIME, PRIMARY KEY(uuid))");
     }
 
-    public static void createUser(UUID uuid) {
+    public static void createUser(ProxiedPlayer pp) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date time = Date.from(Instant.now());
-        MySQL.update("INSERT INTO `user` VALUES ('" + uuid.toString() + "', 0, 0, '" + sdf.format(time) + "', -1, 'EN', 0, '" + sdf.format(time) + "')");
-        System.out.println("INSERT INTO `user` VALUES ('" + uuid.toString() + "', 0, 0, '" + sdf.format(time) + "', -1, 'EN', 0, '" + sdf.format(time) + "')");
+        MySQL.update("INSERT INTO `user` VALUES ('" + pp.getUniqueId().toString() + "', 0, 0, '" + sdf.format(time) + "', -1, 'NONE', 'EN', 0, '" + sdf.format(time) + "')");
     }
 
     public static void deleteUser(UUID uuid) {
@@ -58,11 +59,11 @@ public class User {
         }
     }
 
-    public static int getPoints(UUID uuid) {
+    public static int getSchnitzel(UUID uuid) {
         try {
-            ResultSet rs = MySQL.querry("SELECT points FROM user WHERE uuid = '" + uuid + "'");
+            ResultSet rs = MySQL.querry("SELECT schnitzel FROM user WHERE uuid = '" + uuid + "'");
             while (rs.next()) {
-                return rs.getInt("points");
+                return rs.getInt("schnitzel");
             }
 
         } catch (SQLException e) {
@@ -71,27 +72,27 @@ public class User {
         return -1;
     }
 
-    public static void setPoints(UUID uuid, int points) {
-        MySQL.update("UPDATE user SET points = " + points + " WHERE uuid = '" + uuid + "'");
+    public static void setSchnitzel(UUID uuid, int schnitzel) {
+        MySQL.update("UPDATE user SET schnitzel = " + schnitzel + " WHERE uuid = '" + uuid + "'");
     }
 
-    public static void addPoints(UUID uuid, int points) {
-        setPoints(uuid, getPoints(uuid) + points);
+    public static void addSchnitzel(UUID uuid, int schnitzel) {
+        setSchnitzel(uuid, getSchnitzel(uuid) + schnitzel);
     }
 
-    public static void removePoints(UUID uuid, int points) {
-        setPoints(uuid, getPoints(uuid) - points);
+    public static void removeSchnitzel(UUID uuid, int schnitzel) {
+        setSchnitzel(uuid, getSchnitzel(uuid) - schnitzel);
     }
 
     public static void setOnlinetime(UUID uuid, long onlinetime) {
         MySQL.update("UPDATE user SET onlinetime = " + onlinetime + " WHERE uuid = '" + uuid + "'");
     }
 
-    public static int getOnlinetime(UUID uuid) {
+    public static long getOnlinetime(UUID uuid) {
         try {
             ResultSet rs = MySQL.querry("SELECT onlinetime FROM user WHERE uuid = '" + uuid + "'");
             while (rs.next()) {
-                return rs.getInt("onlinetime");
+                return rs.getLong("onlinetime");
             }
 
         } catch (SQLException e) {
@@ -126,27 +127,45 @@ public class User {
         return -1;
     }
 
+
     public static void setLastTime(UUID uuid, long time) {
         MySQL.update("UPDATE `user` SET lastseen = " + time + " WHERE uuid = '" + uuid + "'");
     }
 
-    public static boolean isPlayerOnline(UUID uuid){
+    public static boolean isOnline(UUID uuid) {
+        return getLastTime(uuid) == -1;
+    }
+
+    public static HashMap<UUID, Long> getOnlineTop(int max) {
+        HashMap<UUID, Long> map = new HashMap<>();
         try {
-            ResultSet rs = MySQL.querry("SELECT lastseen FROM `user` WHERE uuid = '" + uuid + "'");
-            return rs.getLong("lastseen") == -1;
+            ResultSet rs = MySQL.querry("SELECT uuid, onlinetime FROM user ORDER BY onlinetime DESC LIMIT " + max);
+            while (rs.next()) {
+                map.put(UUID.fromString(rs.getString("uuid")), rs.getLong("onlinetime"));
+            }
+            return map;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
+    public static void setServer(UUID uuid, String server) {
+        if (server == null) {
+            server = "NONE";
+        }
+        MySQL.update("UPDATE `user` SET server = '" + server + "' WHERE uuid = '" + uuid + "'");
+    }
 
-    public static HashMap<String, Integer> getTop5() {
-        HashMap<String, Integer> map = new HashMap<>();
+    public static String getServer(UUID uuid) {
         try {
-            ResultSet rs = MySQL.querry("SELECT  name, onlinetime FROM user ORDER BY onlinetime DESC LIMIT 5");
+            ResultSet rs = MySQL.querry("SELECT server FROM `user` WHERE uuid = '" + uuid + "'");
             while (rs.next()) {
-                map.put(rs.getString("name"), rs.getInt("onlinetime"));
+                String s = rs.getString("server");
+                if (s.equalsIgnoreCase("NONE")) {
+                    s = null;
+                }
+                return s;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -154,13 +173,13 @@ public class User {
         return null;
     }
 
-    public static String getLanguage(UUID uuid){
-        try{
+    public static String getLanguage(UUID uuid) {
+        try {
             ResultSet rs = MySQL.querry("SELECT lang FROM user WHERE uuid = '" + uuid + "'");
-            while(rs.next()) {
+            while (rs.next()) {
                 return rs.getString("lang");
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;

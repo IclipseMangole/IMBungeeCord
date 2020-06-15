@@ -1,8 +1,6 @@
 package de.Iclipse.IMBungee.Functions;
 
 import de.Iclipse.IMBungee.Data;
-import de.Iclipse.IMBungee.Functions.MySQL.Server;
-import de.Iclipse.IMBungee.Functions.MySQL.State;
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
@@ -36,10 +34,6 @@ public class Scheduler {
                     boolean serverOnline = (error == null);
                     //System.out.println(info.getName() + ": Status: " + statusOnline + ", Online: " + serverOnline);
                     if (statusOnline != serverOnline) {
-                        if (!serverOnline) {
-                            Server.setState(name, State.Offline);
-                            Server.setPlayers(name, 0);
-                        }
                         Data.serverstatus.replace(info, statusOnline, serverOnline);
                     }
                     return;

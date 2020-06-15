@@ -24,7 +24,7 @@ public class JoinListener implements Listener {
         if (User.isUserExists(UUIDFetcher.getUUID(p.getName()))) {
             dsp.send(p, "join.old", p.getName());
         } else {
-            User.createUser(UUIDFetcher.getUUID(p.getName()));
+            User.createUser(p);
             dsp.send(p, "join.new", p.getName());
         }
         User.setLastTime(p.getUniqueId(), -1);
