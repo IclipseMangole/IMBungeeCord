@@ -16,7 +16,7 @@ public class MySQL {
     private static String HOST = "localhost";
     private static String DATABASE = "IclipseMangole";
     private static String USER = "root";
-    private static String PASSWORD = "dshchangE762";
+    private static String PASSWORD = "";
     private static String prefix = "&5" + Data.instance.getDescription().getName() + " &3MySQL &8&7";
 
     public static Connection conn;

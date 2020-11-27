@@ -4,6 +4,7 @@
     <facet type="minecraft" name="Minecraft">
       <configuration>
         <autoDetectTypes>
+          <platformType>SPIGOT</platformType>
           <platformType>BUNGEECORD</platformType>
         </autoDetectTypes>
       </configuration>
@@ -32,6 +33,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="paper" level="project" />
+    <orderEntry type="library" name="spigot-1.16.4" level="project" />
   </component>
 </module>
